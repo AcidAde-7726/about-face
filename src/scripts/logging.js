@@ -11,6 +11,7 @@ export var LogLevel;
     LogLevel[LogLevel["DEBUG"] = 3] = "DEBUG";
     LogLevel[LogLevel["ALL"] = 4] = "ALL";
 })(LogLevel || (LogLevel = {}));
+
 /**
  * Simple wrapper around console.log to give us log level functionality.
  * @function
@@ -22,7 +23,7 @@ export function log(messageLevel, ...args) {
         return;
     if (messageLevel === LogLevel.ERROR)
         console.error(MODULE_ID + ' | ', ...args);
-    else if (messageLevel === LogLevel.WARN) 
+    else if (messageLevel === LogLevel.WARN)
         console.warn(MODULE_ID + ' | ', ...args);
     else
         console.log(MODULE_ID + ' | ', ...args);

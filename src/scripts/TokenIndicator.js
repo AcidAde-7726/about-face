@@ -1,7 +1,7 @@
-import { SpriteID } from './SpriteID.js';
-import { getTokenOwner, isFirstActiveGM } from './helpers.js';
-import { log, LogLevel } from './logging.js';
-import { AboutFace } from '../about-face.js';
+import {SpriteID} from './SpriteID.js';
+import {getTokenOwner, isFirstActiveGM} from './helpers.js';
+import {log, LogLevel} from './logging.js';
+import {AboutFace} from '../about-face.js';
 import flipAngles from './flipAngles.js'
 
 const MODULE_ID = 'about-face';
@@ -19,9 +19,9 @@ export class TokenIndicator {
     constructor(token, sprite = {}) {
         this.token = token;
         this.sprite = sprite;
-        this.c = new PIXI.Container(); 
+        this.c = new PIXI.Container();
         const flipOrRotate = token.getFlag(MODULE_ID, 'flipOrRotate') || AboutFace.flipOrRotate;
-        if (flipOrRotate !== 'rotate') token.update({lockRotation:true});
+        if (flipOrRotate !== 'rotate') token.update({lockRotation: true});
     }
 
     /* -------------------------------------------- */
@@ -39,14 +39,14 @@ export class TokenIndicator {
             this.sprite = this.generateTriangleIndicator("large", indicator_color, 0x000000);
         if (AboutFace.spriteType === 2) {
             // Only allow the Hex sprite on Hex Column scenes (gridType 4 & 5).
-            if (scene?.data.gridType >= 4) 
-                this.sprite = this.generateHexFacingsIndicator(indicator_color);  
+            if (scene?.data.gridType >= 4)
+                this.sprite = this.generateHexFacingsIndicator(indicator_color);
             else {
                 log(LogLevel.ERROR, 'TokenIndicator.create', 'hex indicator only works on hex scenes!');
                 ui.notifications.notify(`About Face: hex indicator only works on hex scenes!`, 'error');
                 return;
             }
-        }        
+        }
 
         this.sprite.zIndex = -1;
         this.sprite.position.x = this.token.w / 2;
@@ -66,7 +66,7 @@ export class TokenIndicator {
     }
 
     /**
-     * Wipe the current indicator.      
+     * Wipe the current indicator.
      */
     async wipe() {
         this.token.removeChild(this.c);
@@ -76,9 +76,9 @@ export class TokenIndicator {
 
     /**
      * Rotates the sprite
-     * @param {int|float} deg  -- rotate the sprite the specified amount. 
+     * @param {int|float} deg  -- rotate the sprite the specified amount.
      * If deg is omitted it will rotate to the current direction.
-     * 
+     *
      */
     rotate(deg) {
         log(LogLevel.DEBUG, 'TokenIndicator rotate()');
@@ -90,14 +90,13 @@ export class TokenIndicator {
             let flipOrRotate = this.token.getFlag(MODULE_ID, 'flipOrRotate') || AboutFace.flipOrRotate;
 
             if (flipOrRotate === "rotate") {
-                if (!this.token.data.lockRotation) this.token.update({ rotation: deg });
-            }
-            else {
-            
+                if (!this.token.data.lockRotation) this.token.update({rotation: deg});
+            } else {
+
                 let facingDirection = (this.token.getFlag(MODULE_ID, 'facingDirection')) || AboutFace.facingDirection;
 
                 // todo: gridless angles (should be between angles instead)
-                
+
                 let angles = flipAngles[canvas.grid.type][flipOrRotate][facingDirection];
                 if (angles[deg] != null) {
                     const update = {
@@ -107,11 +106,11 @@ export class TokenIndicator {
                     this.token.update(update);
                 }
             }
-        }        
+        }
         if (!this.sprite || this.token.getFlag(MODULE_ID, 'indicatorDisabled')) {
             return false;
         }
-        this.sprite.angle = deg;        
+        this.sprite.angle = deg;
         return true;
     }
 
@@ -133,7 +132,7 @@ export class TokenIndicator {
         if (!this.token.getFlag(MODULE_ID, 'indicatorDisabled'))
             this.sprite.visible = true;
     }
-    
+
     /* -------------------------------------------- */
 
     /**
@@ -148,9 +147,10 @@ export class TokenIndicator {
     hasSprite() {
         return (this.sprite) ? true : false;
     }
+
     /* -------------------------------------------- */
-    
-    
+
+
     /**
      * Try to determine the indicator color based on the token owner.  Defaults to red
      */
@@ -170,7 +170,7 @@ export class TokenIndicator {
     }
 
     /**
-     * 
+     *
      * @param {string} size        -- string from ['small','normal','large']
      * @param {string} fillColor   -- string in hex color code of fill color
      * @param {string} borderColor -- string in hex color code of border color
@@ -217,7 +217,7 @@ export class TokenIndicator {
         let texture = canvas.app.renderer.generateTexture(i);
         return new SpriteID(texture, this.token.id);
     }
-    
+
     generateHexFacingsIndicator(fillColor = 0xe8FF00, borderColor = 0x000000) {
         let i = new PIXI.Graphics();
         let h0 = 1;
@@ -244,7 +244,7 @@ export class TokenIndicator {
         // that hex grids have tokens that are bigger than the grid.
         // todo: now redundant, remove or fix
         const ratio = canvas.grid.size / this.token.w;
-        const radius = ((this.token.w / 2) * ratio) + modHeight ;
+        const radius = ((this.token.w / 2) * ratio) + modHeight;
 
 
         i.beginFill(fillColor, .5).lineStyle(2, borderColor, 1)
@@ -262,7 +262,7 @@ export class TokenIndicator {
             .lineStyle(thickness, green, alpha)
             .lineTo(wi + x + w0, h + h0)
             .lineTo(wi + w0, h + h0)
-            .lineTo(w0, (h + h0)/2)
+            .lineTo(w0, (h + h0) / 2)
             .lineStyle(thickness, blue, alpha)
             .lineTo(wi + w0, h0)
             .closePath()
@@ -291,16 +291,16 @@ export class TokenIndicator {
 
 
         i.drawPolygon([450, -50, // Starting x, y coordinates for the star
-                470, 25, // Star is drawn in a clockwork motion
-                530, 55,
-                485, 95,
-                500, 150,
-                450, 120,
-                400, 150,
-                415, 95,
-                370, 55,
-                430, 25
-            ])
+            470, 25, // Star is drawn in a clockwork motion
+            530, 55,
+            485, 95,
+            500, 150,
+            450, 120,
+            400, 150,
+            415, 95,
+            370, 55,
+            430, 25
+        ])
             .drawCircle(450, 45, 60)
 
 
