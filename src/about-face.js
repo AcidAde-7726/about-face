@@ -113,6 +113,18 @@ Hooks.once("init", () => {
             if (isFirstActiveGM()) canvas.scene.setFlag(MODULE_ID, 'facingDirection', value);
         }
     });
+
+    game.settings.register(MODULE_ID, 'move-autorotation', {
+        name: "about-face.options.move-autorotation.name",
+        hint: "about-face.options.move-autorotation.hint",
+        scope: "world",
+        config: true,
+        default: false,
+        type: Boolean,
+        onChange: (value) => {
+            AboutFace.moveAutorotation = value;
+        }
+    });
 });
 
 
@@ -124,6 +136,7 @@ export class AboutFace {
         AboutFace.sceneEnabled = true;
         AboutFace.tokenIndicators = {};
         AboutFace.flipOrRotate;
+        AboutFace.moveAutorotation = false;
 
         AboutFace.facingOptions = {
             'rotate': {},
@@ -231,8 +244,12 @@ export class AboutFace {
         if (isFirstActiveGM() && (updateData.x != null || updateData.y != null || updateData.rotation != null)) {
             let direction;
             // if it's a rotation update then set the flag on the relevant token
-            if (updateData.rotation != null) direction = updateData.rotation;
+            if (updateData.rotation != null)
+            {
+            direction = updateData.rotation;
+            }
             else {
+                if(AboutFace.moveAutorotation) {
                 // else check for movement
                 const lastPos = new PIXI.Point(AboutFace.tokenIndicators[token.id].token.x, AboutFace.tokenIndicators[token.id].token.y);
                 // calculate new position data
@@ -240,6 +257,7 @@ export class AboutFace {
                 let dY = (updateData.y != null) ? updateData.y - lastPos.y : 0; // new Y
                 if (dX === 0 && dY === 0) return;
                 direction = getRotationDegrees(dX, dY, "", scene.data.gridType >= 4);
+                }
             }
 
             return await AboutFace.setTokenFlag(token, 'direction', direction);
@@ -294,6 +312,7 @@ export class AboutFace {
                 // we need to update the existing tokenIndicators with the new sprite type.            
                 for (const [key, indicator] of Object.entries(AboutFace.tokenIndicators)) {
                     let token = canvas.tokens.get(key);
+                    if (token === undefined) continue;
                     log(LogLevel.INFO, 'updateSceneHandler, updating TokenIndicator for:', token.name);
                     indicator.wipe();
                     AboutFace.deleteTokenHandler(canvas.scene, token);
